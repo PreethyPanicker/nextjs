@@ -16,15 +16,20 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
     params.set('page', pageNumber.toString());
     return `${pathname}?${params.toString()}`;
   };
-  // NOTE: Uncomment this code in Chapter 10
+  const allPages = generatePagination(currentPage, totalPages);
 
-  // const allPages = generatePagination(currentPage, totalPages);
+  if (totalPages <= 1) {
+    return null;
+  }
 
   return (
     <>
-      {/*  NOTE: Uncomment this code in Chapter 10 */}
-
-      {/* <div className="inline-flex">
+      <div className="inline-flex items-center">
+        <PaginationArrow
+          direction="first"
+          href={createPageURL(1)}
+          isDisabled={currentPage <= 1}
+        />
         <PaginationArrow
           direction="left"
           href={createPageURL(currentPage - 1)}
@@ -57,7 +62,12 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
           href={createPageURL(currentPage + 1)}
           isDisabled={currentPage >= totalPages}
         />
-      </div> */}
+        <PaginationArrow
+          direction="last"
+          href={createPageURL(totalPages)}
+          isDisabled={currentPage >= totalPages}
+        />
+      </div>
     </>
   );
 }
@@ -99,7 +109,7 @@ function PaginationArrow({
   isDisabled,
 }: {
   href: string;
-  direction: 'left' | 'right';
+  direction: 'left' | 'right' | 'first' | 'last';
   isDisabled?: boolean;
 }) {
   const className = clsx(
@@ -107,16 +117,20 @@ function PaginationArrow({
     {
       'pointer-events-none text-gray-300': isDisabled,
       'hover:bg-gray-100': !isDisabled,
-      'mr-2 md:mr-4': direction === 'left',
-      'ml-2 md:ml-4': direction === 'right',
+      'mr-2 md:mr-4': direction === 'left' || direction === 'first',
+      'ml-2 md:ml-4': direction === 'right' || direction === 'last',
     },
   );
 
   const icon =
     direction === 'left' ? (
       <ArrowLeftIcon className="w-4" />
-    ) : (
+    ) : direction === 'right' ? (
       <ArrowRightIcon className="w-4" />
+    ) : direction === 'first' ? (
+      <span className="text-xs font-semibold">{'<<'}</span>
+    ) : (
+      <span className="text-xs font-semibold">{'>>'}</span>
     );
 
   return isDisabled ? (
